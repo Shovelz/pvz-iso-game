@@ -45,16 +45,17 @@ public class GameScreen implements Screen{
 
 		this.batch = batch;
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		port = new FitViewport(1920,1080, camera);
-//		camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+		port = new FitViewport(1920/2,1080/2, camera);
+		camera.position.set(170, 0, 0);
 		maploader = new TmxMapLoader();
 		map = maploader.load("tileset.tmx");
 		renderer = new IsometricTiledMapRenderer(map); 
 //		camera.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 		mapObjects = new Tilemap(map);
 
-//		map.getLayers().get(0).setOffsetX(-100);
+//		map.getLayers().get(0).setOffsetX(-200);
 //		map.getLayers().get(0).setOffsetY(-100);
+		mapObjects.fillMap();
 	}
 
 
@@ -93,25 +94,25 @@ public class GameScreen implements Screen{
 	@Override
 	public void render(float delta) {
 
-//		int mx = Gdx.input.getX();
-//		int my = Gdx.input.getY();
+		int mx = Gdx.input.getX();
+		int my = Gdx.input.getY();
 
-//		camera.unproject(unprojectVector.set(mx, my, 0.0f));
-//		worldMousePosition.set(unprojectVector.x, unprojectVector.y);
+		camera.unproject(unprojectVector.set(mx, my, 0.0f));
+		worldMousePosition.set(unprojectVector.x, unprojectVector.y);
 
-//		if (prevHover!= null) {
-//			map.resetTileTexture(prevHover);
-//			prevHover = null;
-//		}
+		if (prevHover!= null) {
+			mapObjects.resetTileTexture(prevHover);
+			prevHover = null;
+		}
 		//        if (Gdx.input.isTouched()) {
-//		Tile t = map.get(worldMousePosition.x, worldMousePosition.y);
-//		if (t != null) {
-//			Gdx.graphics.setSystemCursor(SystemCursor.Hand);
-//			prevHover = t;
-//			map.set(t);
-//		}else {
-//			Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
-//		}
+		Tile t = mapObjects.get(worldMousePosition.x, worldMousePosition.y);
+		if (t != null) {
+			Gdx.graphics.setSystemCursor(SystemCursor.Hand);
+			prevHover = t;
+			mapObjects.set(t);
+		}else {
+			Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
+		}
 
 
 		//        System.out.println(t.tilemapPos.x);
