@@ -9,23 +9,29 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.pvz.game.tiles.PlantTile;
+import com.pvz.game.tiles.Tile;
 
 public class Tilemap {
 
 	public List<Tile> base = new LinkedList<Tile>();
-	public List<Tile> objects = new LinkedList<Tile>();
+	public List<PlantTile> objects = new LinkedList<PlantTile>();
 	public List<Tile> background = new LinkedList<Tile>();
-	private Texture hill;
-	private Texture water;
 	private Texture grass;
 	private Texture grassHigh;
-	private Texture box;
 	private Texture peashooter;
 	private Texture houseBG;
+	private TiledMap isoMap;
 
 	private String[][] map = {
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -40,13 +46,11 @@ public class Tilemap {
 	public static final float TILE_HEIGHT = 48;
 
 
-	public Tilemap() {
+	public Tilemap(TiledMap iso) {
+		isoMap = iso;
 		grass = new Texture("grass3.png");
 		grass.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		grassHigh = new Texture("grass3H.png");
-		water = new Texture("water.png");
-		hill = new Texture("hill.png");
-		box = new Texture("box.png");
 		peashooter = new Texture("peashooter.png");
 		houseBG = new Texture("background6x9.png");
 
@@ -55,14 +59,7 @@ public class Tilemap {
 
 	public void render(SpriteBatch batch) {
 
-//		for(Tile t : base) {
-//			t.render(batch);
-//		}
-
-//		for(Tile t : background) {
-//			t.render(batch);
-//		}
-		for(Tile t : objects) {
+		for(PlantTile t : objects) {
 			t.render(batch);
 		}
 
@@ -70,29 +67,18 @@ public class Tilemap {
 
 	public void fillMap() {
 
-		Random rand = new Random();
-		for(int row = map.length - 1; row >= 0; row--) {
-			for(int col = map[row].length - 1; col >= 0; col--) {
-				float x = (row - col) * TILE_WIDTH/ 2f;
-				float y = (col + row) * TILE_HEIGHT/ 2f;
-				//For objects ( cause why add more empty space in the images)
+		
+		float groundX = isoMap.getLayers().get(0).getOffsetX() + (map.length) *(TILE_WIDTH/2) + TILE_WIDTH /2;
+		float groundY = isoMap.getLayers().get(0).getOffsetY() - (map[map.length-1].length) *(TILE_HEIGHT/4) ;
 
-				Tile t = null;
-//				if(map[row][col].equals("0")) {
-//					t = new Tile(grass, new Vector2(row, col), new Vector2(x, y));
-//					base.add(t);
-//				} else if(map[row][col].equals("1")){
-//					base.add(new Tile(water, new Vector2(row, col), new Vector2(x, y)));
-//				}
-				int r = rand.nextInt(10);
-				if(r == 5) {
-					objects.add(new Tile(peashooter, new Vector2(row, col), new Vector2(x, y)));
-					//										this.set(t);
-				}
-
+		for(int row = 1;row < map.length+1; row++) {
+			for(int col = 0; col < map[row-1].length;col++) {
+				float x = groundX + ((row - col) * TILE_WIDTH/2);
+				float y = groundY + ((col + row) * TILE_HEIGHT/4);
+				objects.add(new PlantTile(peashooter, new Vector2(row, col), new Vector2(x,y)));
 			}
-		}	
-		background.add(new Tile(houseBG, new Vector2(0, 0), new Vector2(-272, -35)));
+		}
+
 
 	}
 
@@ -113,9 +99,9 @@ public class Tilemap {
 		float y = (col + row) * halfHeight;
 
 		if (map[row][col].equals("0")) {
-			return new Tile(grass, tilemapPos, new Vector2(x, y));
+			return new PlantTile(grass, tilemapPos, new Vector2(x, y));
 		} else if (map[row][col].equals("1")) {
-			return new Tile(water, tilemapPos, new Vector2(x, y));
+//			return new PlantTile(water, tilemapPos, new Vector2(x, y));
 		} else {
 			// Handle other cases if needed.
 			return null;
@@ -128,21 +114,21 @@ public class Tilemap {
 	public void set(Tile t) {
 
 		base.stream()
-		.filter(tile -> tile.tilemapPos.equals(t.tilemapPos))
+		.filter(tile -> tile.getTilemapPos().equals(t.getTilemapPos()))
 		.findFirst()
 		.ifPresent(tile -> {
 			tile.setTexture(grassHigh);
-			tile.worldPos.y -= 5;
+			tile.getWorldPos().y -= 5;
 		}); 
 	}
 
 	public void resetTileTexture(Tile t) {
 		base.stream()
-		.filter(tile -> tile.tilemapPos.equals(t.tilemapPos))
+		.filter(tile -> tile.getTilemapPos().equals(t.getTilemapPos()))
 		.findFirst()
 		.ifPresent(tile -> {
 			tile.setTexture(grass);
-			tile.worldPos.y += 5; 
+			tile.getWorldPos().y += 5; 
 		});
 	}	
 

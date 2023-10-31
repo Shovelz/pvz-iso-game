@@ -20,8 +20,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.pvz.game.IsoGame;
-import com.pvz.game.Tile;
 import com.pvz.game.Tilemap;
+import com.pvz.game.tiles.Tile;
 
 public class GameScreen implements Screen{
 
@@ -40,6 +40,7 @@ public class GameScreen implements Screen{
 	private TiledMap map;
 	private IsometricTiledMapRenderer renderer;
 	private Viewport port;
+
 	public GameScreen(SpriteBatch batch) {
 
 		this.batch = batch;
@@ -50,7 +51,7 @@ public class GameScreen implements Screen{
 		map = maploader.load("tileset.tmx");
 		renderer = new IsometricTiledMapRenderer(map); 
 //		camera.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
-		mapObjects = new Tilemap();
+		mapObjects = new Tilemap(map);
 
 //		map.getLayers().get(0).setOffsetX(-100);
 //		map.getLayers().get(0).setOffsetY(-100);
@@ -65,7 +66,7 @@ public class GameScreen implements Screen{
 	}
 
 	public void handleInput(float delta) {
-			if (Gdx.input.isKeyPressed(Keys.A))
+		if (Gdx.input.isKeyPressed(Keys.A))
 			camera.position.x -= delta * scrollSpeed;
 		if (Gdx.input.isKeyPressed(Keys.D))
 			camera.position.x += delta * scrollSpeed;
