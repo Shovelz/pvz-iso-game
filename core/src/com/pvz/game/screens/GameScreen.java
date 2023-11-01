@@ -30,10 +30,9 @@ public class GameScreen implements Screen{
 	private OrthographicCamera camera;
 	private Tilemap mapObjects;
 	private int scrollSpeed = 100;
-	private int zoomSpeed = 10;
+	private int zoomSpeed = 5;
 	private Vector3 unprojectVector = new Vector3();
 	private Vector2 worldMousePosition = new Vector2();
-	private Vector2 worldPosition = new Vector2();
 	private Tile prevHover;
 
 	private TmxMapLoader maploader;
@@ -45,7 +44,7 @@ public class GameScreen implements Screen{
 
 		this.batch = batch;
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		port = new FitViewport(1920/2,1080/2, camera);
+		port = new FitViewport(1920/3,1080/3, camera);
 		camera.position.set(170, 0, 0);
 		maploader = new TmxMapLoader();
 		map = maploader.load("tileset.tmx");

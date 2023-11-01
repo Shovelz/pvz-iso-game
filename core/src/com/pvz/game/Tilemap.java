@@ -19,6 +19,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.pvz.game.tiles.BackgroundTile;
 import com.pvz.game.tiles.PlantTile;
 import com.pvz.game.tiles.Tile;
 
@@ -28,11 +29,14 @@ public class Tilemap {
 	public List<Tile> zombies= new LinkedList<Tile>();
 	public List<PlantTile> base = new LinkedList<PlantTile>();
 	private Texture grass;
-	private Texture grassHigh;
 	private Texture peashooter;
 	private Texture houseBG;
 	private TiledMap isoMap;
 	private Vector2 baseCorner = new Vector2();
+	private BackgroundTile background;
+	//This is really horrible, but since im using an overlayed image these offsets have to exist
+	private Vector2 horribleBackgroundOffset = new Vector2(-(6*TILE_WIDTH) + (TILE_WIDTH/4) + 1, -TILE_HEIGHT/2 +2);
+	
 
 	private String[][] map = {
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -43,15 +47,14 @@ public class Tilemap {
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
 	}; 
 
+
 	public static final float TILE_WIDTH = 48;
 	public static final float TILE_HEIGHT = 48;
 
-
 	public Tilemap(TiledMap iso) {
 		isoMap = iso;
-		grass = new Texture("grass3.png");
+		grass = new Texture("grass.png");
 		grass.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		grassHigh = new Texture("grass3H.png");
 		peashooter = new Texture("peashooter.png");
 		houseBG = new Texture("background6x9.png");
 
@@ -61,26 +64,22 @@ public class Tilemap {
 
 	public void render(SpriteBatch batch) {
 		for(PlantTile t : base) {
-			t.render(batch);
-		}
-		for(PlantTile t : plants) {
 //			t.render(batch);
 		}
+
+		background.render(batch);
+
+		for(PlantTile t : plants) {
+			t.render(batch);
+		}
+
 
 	}
 
 	public void fillMap() {
 
-
-		
-
-//		for(int row = map.length-1; row >= 0; row--) {
-//			for(int col = map[row].length-1; col >= 0; col--) {
-//				float x = (row - col) * TILE_WIDTH/2;
-//				float y = (col + row) * TILE_HEIGHT/4;
-//			}
-//		}
 		Vector2 corner = baseCorner.add(new Vector2((map.length) *(TILE_WIDTH/2) + TILE_WIDTH /2, -(map[map.length-1].length) *(TILE_HEIGHT/4) ));
+		background = new BackgroundTile(houseBG, new Vector2(0, 0), new Vector2(baseCorner.x + horribleBackgroundOffset.x , baseCorner.y + horribleBackgroundOffset.y ));
 		for(int row = 1;row < map.length+1; row++) {
 			for(int col = 0; col < map[row-1].length;col++) {
 				float x = corner.x + ((row - col) * TILE_WIDTH/2);
@@ -116,41 +115,6 @@ public class Tilemap {
 	}
 
 	
-	
-	public Tile get(float mouseX) {
-		float halfWidth = TILE_WIDTH / 2f;
-		float halfHeight = TILE_HEIGHT / 2f;
-
-		Vector2 corner = baseCorner.add(new Vector2((map.length) *(TILE_WIDTH/2) + TILE_WIDTH /2, -(map[map.length-1].length) *(TILE_HEIGHT/4) ));
-//		int col = (int) Math.floor((mouseY / halfHeight - (mouseX / halfWidth - 1f)) / 2 );
-//		int row = (int) Math.floor(((mouseX / halfWidth + mouseY / halfHeight) - 1f) / 2);
-		
-		int col = (int) Math.floor((mouseY / TILE_HEIGHT - mouseX / TILE_WIDTH + 0.5f));
-		int row = (int) Math.floor((mouseX / TILE_WIDTH  + mouseY / TILE_HEIGHT - 0.5f));
-
-
-		if (row < 0 || row >= map.length || col < 0 || col >= map[0].length) {
-			// Handle the case where the coordinates are outside the map bounds.
-			return null;
-		}
-
-		Vector2 tilemapPos = new Vector2(row, col);
-//		float x = (row - col) * halfWidth;
-//		float y = (col + row) * halfHeight;
-			float x = corner.x + ((row - col) * TILE_WIDTH/2);
-				float y = corner.y + ((col + row) * TILE_HEIGHT/4);
-
-		if (map[row][col].equals("0")) {
-			return new PlantTile(grass, tilemapPos, new Vector2(x, y));
-		} else if (map[row][col].equals("1")) {
-			return new PlantTile(grass, tilemapPos, new Vector2(x, y));
-		} else {
-			// Handle other cases if needed.
-			return null;
-		}
-	}
-
-
 
 
 	public void set(Tile t) {
