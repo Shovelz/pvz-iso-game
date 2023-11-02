@@ -1,5 +1,8 @@
 package com.pvz.game.screens;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -20,26 +23,30 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.pvz.game.IsoGame;
-import com.pvz.game.Tilemap;
-import com.pvz.game.tiles.Tile;
-
+import com.pvz.game.TilemapOverlay;
+import com.pvz.game.tiles.AbstractTile;
+import com.pvz.game.tiles.PlantTile;
+import com.pvz.game.plants.*;
 public class GameScreen implements Screen{
 
 
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
-	private Tilemap mapObjects;
+	private TilemapOverlay mapObjects;
 	private int scrollSpeed = 100;
 	private int zoomSpeed = 5;
 	private Vector3 unprojectVector = new Vector3();
 	private Vector2 worldMousePosition = new Vector2();
-	private Tile prevHover;
+	private AbstractTile prevHover;
 
 	private TmxMapLoader maploader;
 	private TiledMap map;
 	private IsometricTiledMapRenderer renderer;
 	private Viewport port;
-
+	
+	private List<Plant> plants = new ArrayList<Plant>();
+	private PlantLoader plantLoader;
+	
 	public GameScreen(SpriteBatch batch) {
 
 		this.batch = batch;
@@ -50,7 +57,7 @@ public class GameScreen implements Screen{
 		map = maploader.load("tileset.tmx");
 		renderer = new IsometricTiledMapRenderer(map); 
 //		camera.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
-		mapObjects = new Tilemap(map);
+		mapObjects = new TilemapOverlay(map);
 
 //		map.getLayers().get(0).setOffsetX(-200);
 //		map.getLayers().get(0).setOffsetY(-100);
@@ -103,16 +110,20 @@ public class GameScreen implements Screen{
 			mapObjects.resetTileTexture(prevHover);
 			prevHover = null;
 		}
-		//        if (Gdx.input.isTouched()) {
-		Tile t = mapObjects.get(worldMousePosition.x, worldMousePosition.y);
+		
+		AbstractTile t = mapObjects.get(worldMousePosition.x, worldMousePosition.y);
 		if (t != null) {
 			Gdx.graphics.setSystemCursor(SystemCursor.Hand);
 			prevHover = t;
-			mapObjects.set(t);
+			mapObjects.set(t, new PlantTile(new Texture("peashooter.png"), new Vector2(0,0), new Vector2(50, 50)));
 		}else {
 			Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
 		}
 
+	    if (Gdx.input.isTouched() && t != null) {
+		        
+	    	mapObjects.plant(t, t);
+		}
 
 		//        System.out.println(t.tilemapPos.x);
 		//        System.out.println(t.tilemapPos.y);

@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class Tile {
+public abstract class AbstractTile {
 	
 	protected Texture texture;
 	protected Vector2 tilemapPos;
 	protected Vector2 worldPos;
 	
-	public Tile(Texture t, Vector2 tileMapPos, Vector2 wPos) {
+	public AbstractTile(Texture t, Vector2 tileMapPos, Vector2 wPos) {
 		texture = t;
 		tilemapPos = tileMapPos;
 		worldPos = wPos;

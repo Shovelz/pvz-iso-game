@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class BackgroundTile extends Tile{
+public class BackgroundTile extends AbstractTile{
 	
 	
 	public BackgroundTile(Texture t, Vector2 tileMapPos, Vector2 worldPos) {

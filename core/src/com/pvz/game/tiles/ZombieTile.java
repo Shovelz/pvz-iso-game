@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class ZombieTile extends Tile{
+public class ZombieTile extends AbstractTile{
 	
 	
 	public ZombieTile(Texture t, Vector2 tileMapPos, Vector2 worldPos) {

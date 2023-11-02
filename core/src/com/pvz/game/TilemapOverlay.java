@@ -21,13 +21,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.pvz.game.tiles.BackgroundTile;
 import com.pvz.game.tiles.PlantTile;
-import com.pvz.game.tiles.Tile;
+import com.pvz.game.tiles.AbstractTile;
+import com.pvz.game.tiles.HoverTile;
 
-public class Tilemap {
+public class TilemapOverlay {
 
 	public List<PlantTile> plants= new LinkedList<PlantTile>();
-	public List<Tile> zombies= new LinkedList<Tile>();
-	public List<PlantTile> base = new LinkedList<PlantTile>();
+	public List<AbstractTile> zombies= new LinkedList<AbstractTile>();
+	public List<AbstractTile> base = new LinkedList<AbstractTile>();
 	private Texture grass;
 	private Texture peashooter;
 	private Texture houseBG;
@@ -51,7 +52,7 @@ public class Tilemap {
 	public static final float TILE_WIDTH = 48;
 	public static final float TILE_HEIGHT = 48;
 
-	public Tilemap(TiledMap iso) {
+	public TilemapOverlay(TiledMap iso) {
 		isoMap = iso;
 		grass = new Texture("grass.png");
 		grass.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -60,12 +61,11 @@ public class Tilemap {
 
 		baseCorner.x = isoMap.getLayers().get(0).getOffsetX(); 
 		baseCorner.y = isoMap.getLayers().get(0).getOffsetY();
+		
 	}
 
 	public void render(SpriteBatch batch) {
-		for(PlantTile t : base) {
-//			t.render(batch);
-		}
+		
 
 		background.render(batch);
 
@@ -73,7 +73,9 @@ public class Tilemap {
 			t.render(batch);
 		}
 
-
+		for(AbstractTile t : base) {
+			t.render(batch);
+		}
 	}
 
 	public void fillMap() {
@@ -84,8 +86,8 @@ public class Tilemap {
 			for(int col = 0; col < map[row-1].length;col++) {
 				float x = corner.x + ((row - col) * TILE_WIDTH/2);
 				float y = corner.y + ((col + row) * TILE_HEIGHT/4);
-				base.add(new PlantTile(peashooter, new Vector2(row, col), new Vector2(x,y)));
-				plants.add(new PlantTile(peashooter, new Vector2(row, col), new Vector2(x,y)));
+				base.add(new HoverTile(new Vector2(row, col), new Vector2(x,y)));
+				plants.add(new PlantTile(null, new Vector2(row, col), new Vector2(x,y)));
 			}
 		}
 
@@ -95,8 +97,8 @@ public class Tilemap {
 
 
 
-	public PlantTile get(float mouseX, float mouseY) {
-	    for (PlantTile tile : base) {
+	public AbstractTile get(float mouseX, float mouseY) {
+	    for (AbstractTile tile : base) {
 	        Vector2 tilePos = tile.getWorldPos();
 	        float tileX = tilePos.x - baseCorner.x;
 	        float tileY = tilePos.y - baseCorner.y;
@@ -115,26 +117,34 @@ public class Tilemap {
 	}
 
 	
-
-
-	public void set(Tile t) {
-
-		base.stream()
-		.filter(tile -> tile.getTilemapPos().equals(t.getTilemapPos()))
+	public void plant(AbstractTile target, AbstractTile sprite) {
+		
+		plants.stream()
+		.filter(tile -> tile.getTilemapPos().equals(target.getTilemapPos()))
 		.findFirst()
 		.ifPresent(tile -> {
-//			tile.setTexture(grassHigh);
-			tile.getWorldPos().y -= 5;
+			tile.setTexture(peashooter);
+		}); 
+		
+	}
+
+
+	public void set(AbstractTile target, AbstractTile sprite) {
+
+		base.stream()
+		.filter(tile -> tile.getTilemapPos().equals(target.getTilemapPos()))
+		.findFirst()
+		.ifPresent(tile -> {
+			tile.setTexture(peashooter);
 		}); 
 	}
 
-	public void resetTileTexture(Tile t) {
+	public void resetTileTexture(AbstractTile t) {
 		base.stream()
 		.filter(tile -> tile.getTilemapPos().equals(t.getTilemapPos()))
 		.findFirst()
 		.ifPresent(tile -> {
-//			tile.setTexture(grass);
-			tile.getWorldPos().y += 5; 
+			tile.setTexture(null);
 		});
 	}	
 
