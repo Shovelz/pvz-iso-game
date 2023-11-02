@@ -47,20 +47,19 @@ public class GameScreen implements Screen{
 	private List<Plant> plants = new ArrayList<Plant>();
 	private PlantLoader plantLoader;
 	
+	private float elapsedTime; //For animations
+	
 	public GameScreen(SpriteBatch batch) {
 
 		this.batch = batch;
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		port = new FitViewport(1920/3,1080/3, camera);
-		camera.position.set(170, 0, 0);
+		camera.position.set(170, 30, 0);
 		maploader = new TmxMapLoader();
 		map = maploader.load("tileset.tmx");
 		renderer = new IsometricTiledMapRenderer(map); 
-//		camera.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 		mapObjects = new TilemapOverlay(map);
 
-//		map.getLayers().get(0).setOffsetX(-200);
-//		map.getLayers().get(0).setOffsetY(-100);
 		mapObjects.fillMap();
 	}
 
@@ -100,6 +99,9 @@ public class GameScreen implements Screen{
 	@Override
 	public void render(float delta) {
 
+		elapsedTime += 2 * Gdx.graphics.getDeltaTime();
+		
+		//Get mouse pos and reset textures
 		int mx = Gdx.input.getX();
 		int my = Gdx.input.getY();
 
@@ -111,6 +113,7 @@ public class GameScreen implements Screen{
 			prevHover = null;
 		}
 		
+		//Tile hover
 		AbstractTile t = mapObjects.get(worldMousePosition.x, worldMousePosition.y);
 		if (t != null) {
 			Gdx.graphics.setSystemCursor(SystemCursor.Hand);
@@ -120,13 +123,11 @@ public class GameScreen implements Screen{
 			Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
 		}
 
+		//Plant placement
 	    if (Gdx.input.isTouched() && t != null) {
-		        
 	    	mapObjects.plant(t, t);
 		}
 
-		//        System.out.println(t.tilemapPos.x);
-		//        System.out.println(t.tilemapPos.y);
 		update(delta);
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -135,7 +136,7 @@ public class GameScreen implements Screen{
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 	
-		mapObjects.render(batch);
+		mapObjects.render(batch, elapsedTime);
 		batch.end();
 	}
 

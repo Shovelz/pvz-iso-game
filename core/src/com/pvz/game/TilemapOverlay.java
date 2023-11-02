@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.pvz.game.tiles.BackgroundTile;
 import com.pvz.game.tiles.PlantTile;
+import com.pvz.game.plants.Plant;
 import com.pvz.game.tiles.AbstractTile;
 import com.pvz.game.tiles.HoverTile;
 
@@ -52,6 +53,7 @@ public class TilemapOverlay {
 	public static final float TILE_WIDTH = 48;
 	public static final float TILE_HEIGHT = 48;
 
+	public Plant peashooterPlant = new Plant(peashooter, new Texture("peashooterSheet.png"), 0, 0, 0f, 0, 0, 0f, null);
 	public TilemapOverlay(TiledMap iso) {
 		isoMap = iso;
 		grass = new Texture("grass.png");
@@ -64,13 +66,13 @@ public class TilemapOverlay {
 		
 	}
 
-	public void render(SpriteBatch batch) {
+	public void render(SpriteBatch batch, float elapsedTime) {
 		
 
 		background.render(batch);
 
 		for(PlantTile t : plants) {
-			t.render(batch);
+			t.render(batch, elapsedTime);
 		}
 
 		for(AbstractTile t : base) {
@@ -124,6 +126,7 @@ public class TilemapOverlay {
 		.findFirst()
 		.ifPresent(tile -> {
 			tile.setTexture(peashooter);
+			tile.setAnimation(peashooterPlant.getAnimation(), peashooterPlant.getAnimationFrames());
 		}); 
 		
 	}
