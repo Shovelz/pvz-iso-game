@@ -47,7 +47,7 @@ public class TilemapOverlay {
 	private Vector2 horribleBackgroundOffset = new Vector2(-(6*TILE_WIDTH) + (TILE_WIDTH/4) + 1, -TILE_HEIGHT/2 +2);
 
 
-	private String[][] map = {
+	private static String[][] map = {
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -59,7 +59,6 @@ public class TilemapOverlay {
 
 	public static final float TILE_WIDTH = 48;
 	public static final float TILE_HEIGHT = 48;
-	public static final float END_TILE = 48;
 
 	
 	
@@ -97,7 +96,7 @@ public class TilemapOverlay {
 				float x = corner.x + ((row - col) * TILE_WIDTH/2);
 				float y = corner.y + ((col + row) * TILE_HEIGHT/4);
 				base.put(new Vector2(row, col), new HoverTile(new Vector2(row, col), new Vector2(x,y)));
-				plants.put(new Vector2(row,col), new PlantTile(null, new Vector2(row, col), new Vector2(x,y)));
+				plants.put(new Vector2(row,col), new PlantTile(null, new Vector2(row, col), new Vector2(x,y), base));
 			}
 		}
 
@@ -149,6 +148,10 @@ public class TilemapOverlay {
 
 	public void resetTileTexture(AbstractTile target) {
 		base.get(target.getTilemapPos()).setTexture(null);
-	}	
+	}
+	
+	public Map<Vector2, AbstractTile> getBaseLayer() {
+		return this.base;
+	}
 
 }

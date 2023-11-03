@@ -32,48 +32,64 @@ public abstract class Projectile {
 	public abstract void render(SpriteBatch batch, float delta);
 	public abstract void update(float delta);
 	public abstract void move(float delta);
-	
-	/**
-	 * @return the arc
-	 */
+
 	public float getArc() {
 		return arc;
 	}
 
-	/**
-	 * @param arc the arc to set
-	 */
 	public void setArc(float arc) {
 		this.arc = arc;
 	}
 
-	/**
-	 * @return the speed
-	 */
 	public float getSpeed() {
 		return speed;
 	}
 
-	/**
-	 * @param speed the speed to set
-	 */
 	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 
-	/**
-	 * @return the sprite
-	 */
 	public Texture getSprite() {
 		return sprite;
 	}
 
-	/**
-	 * @param sprite the sprite to set
-	 */
 	public void setSprite(Texture sprite) {
 		this.sprite = sprite;
 	}
+
+	public Vector2 getTarget() {
+		return target;
+	}
+
+	public void setTarget(Vector2 target) {
+		this.target = target;
+	}
+
+	public Vector2 getStart() {
+		return start;
+	}
+
+	public void setStart(Vector2 start) {
+		this.start = start;
+	}
+
+	public Vector2 getLocation() {
+		return location;
+	}
+
+	public void setLocation(Vector2 location) {
+		this.location = location;
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
+	
+	
 	
 	
 }

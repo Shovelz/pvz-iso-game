@@ -113,7 +113,7 @@ public class GameScreen implements Screen{
 		if (t != null) {
 			Gdx.graphics.setSystemCursor(SystemCursor.Hand);
 			prevHover = t;
-			mapObjects.set(t, new PlantTile(new Texture("peashooter.png"), new Vector2(0,0), new Vector2(50, 50)));
+			mapObjects.set(t, new PlantTile(new Texture("peashooter.png"), new Vector2(0,0), new Vector2(50, 50), mapObjects.getBaseLayer()));
 		}else {
 			Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
 		}
