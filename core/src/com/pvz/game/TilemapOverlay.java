@@ -1,8 +1,10 @@
 package com.pvz.game;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -21,24 +23,29 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.pvz.game.tiles.BackgroundTile;
 import com.pvz.game.tiles.PlantTile;
+import com.pvz.game.tiles.ZombieTile;
 import com.pvz.game.plants.Plant;
 import com.pvz.game.tiles.AbstractTile;
 import com.pvz.game.tiles.HoverTile;
 
 public class TilemapOverlay {
 
-	public List<PlantTile> plants= new LinkedList<PlantTile>();
-	public List<AbstractTile> zombies= new LinkedList<AbstractTile>();
-	public List<AbstractTile> base = new LinkedList<AbstractTile>();
+	//	public List<PlantTile> plants= new LinkedList<PlantTile>();
+	private Map<Vector2, PlantTile> plants = new HashMap<Vector2, PlantTile>();
+	private Map<Vector2, AbstractTile> base = new HashMap<Vector2, AbstractTile>();
+	private Map<Vector2, ZombieTile> zombies = new HashMap<Vector2, ZombieTile>();
+
 	private Texture grass;
 	private Texture peashooter;
 	private Texture houseBG;
+
 	private TiledMap isoMap;
 	private Vector2 baseCorner = new Vector2();
+
 	private BackgroundTile background;
 	//This is really horrible, but since im using an overlayed image these offsets have to exist
 	private Vector2 horribleBackgroundOffset = new Vector2(-(6*TILE_WIDTH) + (TILE_WIDTH/4) + 1, -TILE_HEIGHT/2 +2);
-	
+
 
 	private String[][] map = {
 			{"0", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -52,8 +59,10 @@ public class TilemapOverlay {
 
 	public static final float TILE_WIDTH = 48;
 	public static final float TILE_HEIGHT = 48;
+	public static final float END_TILE = 48;
 
-	public Plant peashooterPlant = new Plant(peashooter, new Texture("peashooterSheet.png"), 0, 0, 0f, 0, 0, 0f, null);
+	
+	
 	public TilemapOverlay(TiledMap iso) {
 		isoMap = iso;
 		grass = new Texture("grass.png");
@@ -63,20 +72,19 @@ public class TilemapOverlay {
 
 		baseCorner.x = isoMap.getLayers().get(0).getOffsetX(); 
 		baseCorner.y = isoMap.getLayers().get(0).getOffsetY();
-		
+
 	}
 
 	public void render(SpriteBatch batch, float elapsedTime) {
-		
 
 		background.render(batch);
 
-		for(PlantTile t : plants) {
-			t.render(batch, elapsedTime);
+		for(Map.Entry<Vector2, PlantTile> entry : plants.entrySet()) {
+			entry.getValue().render(batch, elapsedTime);
 		}
 
-		for(AbstractTile t : base) {
-			t.render(batch);
+		for(Map.Entry<Vector2, AbstractTile> entry : base.entrySet()) {
+			entry.getValue().render(batch);
 		}
 	}
 
@@ -88,8 +96,8 @@ public class TilemapOverlay {
 			for(int col = 0; col < map[row-1].length;col++) {
 				float x = corner.x + ((row - col) * TILE_WIDTH/2);
 				float y = corner.y + ((col + row) * TILE_HEIGHT/4);
-				base.add(new HoverTile(new Vector2(row, col), new Vector2(x,y)));
-				plants.add(new PlantTile(null, new Vector2(row, col), new Vector2(x,y)));
+				base.put(new Vector2(row, col), new HoverTile(new Vector2(row, col), new Vector2(x,y)));
+				plants.put(new Vector2(row,col), new PlantTile(null, new Vector2(row, col), new Vector2(x,y)));
 			}
 		}
 
@@ -100,55 +108,47 @@ public class TilemapOverlay {
 
 
 	public AbstractTile get(float mouseX, float mouseY) {
-	    for (AbstractTile tile : base) {
-	        Vector2 tilePos = tile.getWorldPos();
-	        float tileX = tilePos.x - baseCorner.x;
-	        float tileY = tilePos.y - baseCorner.y;
 
-	        float isoX = (mouseX - baseCorner.x - TILE_WIDTH / 2) / (TILE_WIDTH / 2);
-	        float isoY = (mouseY - baseCorner.y - TILE_HEIGHT / 4) / (TILE_HEIGHT / 4);
+		for(Map.Entry<Vector2, AbstractTile> entry : base.entrySet()) {
+			AbstractTile tile = entry.getValue();
+			Vector2 tilePos = tile.getWorldPos();
+			float tileX = tilePos.x - baseCorner.x;
+			float tileY = tilePos.y - baseCorner.y;
 
-	        float tileMouseX = (isoY + isoX) / 2;
-	        float tileMouseY = (isoY - isoX) / 2;
+			float isoX = (mouseX - baseCorner.x - TILE_WIDTH / 2) / (TILE_WIDTH / 2);
+			float isoY = (mouseY - baseCorner.y - TILE_HEIGHT / 4) / (TILE_HEIGHT / 4);
 
-	        if (Math.round(tileMouseX) == tile.getTilemapPos().x && Math.round(tileMouseY) == tile.getTilemapPos().y) {
-	            return tile;
-	        }
-	    }
-	    return null;
+			float tileMouseX = (isoY + isoX) / 2;
+			float tileMouseY = (isoY - isoX) / 2;
+
+			if (Math.round(tileMouseX) == tile.getTilemapPos().x && Math.round(tileMouseY) == tile.getTilemapPos().y) {
+				if(plants.get(tile.getTilemapPos()).getTexture() == null) {
+					return tile;
+				}
+			}
+		}
+		return null;
 	}
 
-	
+
 	public void plant(AbstractTile target, AbstractTile sprite) {
-		
-		plants.stream()
-		.filter(tile -> tile.getTilemapPos().equals(target.getTilemapPos()))
-		.findFirst()
-		.ifPresent(tile -> {
-			tile.setTexture(peashooter);
-			tile.setAnimation(peashooterPlant.getAnimation(), peashooterPlant.getAnimationFrames());
-		}); 
-		
+
+		Plant peashooterPlant = new Plant(new Texture("peashooter.png"), new Texture("peashooterSheet.png"), 0, 0, 2.5f, 0, 0, 0f, null);
+		PlantTile tile = plants.get(target.getTilemapPos());
+		tile.setTexture(peashooterPlant.getTexture());
+		tile.setAnimation(peashooterPlant.getAnimation(), peashooterPlant.getAnimationFrames());
+		tile.setPlant(peashooterPlant);
+		tile.getPlant().setTile(tile);
+
 	}
 
 
 	public void set(AbstractTile target, AbstractTile sprite) {
-
-		base.stream()
-		.filter(tile -> tile.getTilemapPos().equals(target.getTilemapPos()))
-		.findFirst()
-		.ifPresent(tile -> {
-			tile.setTexture(peashooter);
-		}); 
+		base.get(target.getTilemapPos()).setTexture(peashooter);
 	}
 
-	public void resetTileTexture(AbstractTile t) {
-		base.stream()
-		.filter(tile -> tile.getTilemapPos().equals(t.getTilemapPos()))
-		.findFirst()
-		.ifPresent(tile -> {
-			tile.setTexture(null);
-		});
+	public void resetTileTexture(AbstractTile target) {
+		base.get(target.getTilemapPos()).setTexture(null);
 	}	
 
 }

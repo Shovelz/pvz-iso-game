@@ -1,9 +1,15 @@
 package com.pvz.game.plants;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.pvz.game.projectiles.Pea;
 import com.pvz.game.projectiles.Projectile;
+import com.pvz.game.screens.GameScreen;
+import com.pvz.game.tiles.AbstractTile;
+import com.pvz.game.tiles.PlantTile;
 
 public class Plant{
 
@@ -21,6 +27,11 @@ public class Plant{
 
 	private TextureRegion[] animationFrames;
 	private Animation<TextureRegion> animation;
+	private GameScreen game;
+	private PlantTile tile;
+	
+	private enum State { IDLE, FIRING };
+	
 
 	public Plant(Texture texture, Texture spriteSheet, int damage, int health, float reload, int cost, int range, float recharge, Projectile projectile) {
 		this.texture = texture;
@@ -34,6 +45,18 @@ public class Plant{
 		this.projectile = projectile;
 
 		loadAnimations();
+	}
+
+	public PlantTile getTile() {
+		return tile;
+	}
+
+	public void setTile(PlantTile tile) {
+		this.tile = tile;
+	}
+
+	public void setGame(GameScreen game) {
+		this.game = game;
 	}
 
 	//Where loading animations in the Plant and not the Tiles so we only have to load it once 
@@ -60,6 +83,12 @@ public class Plant{
 
 	}
 
+	public Projectile fire() {
+		return new Pea(new Vector2(tile.getWorldPos()).add(new Vector2(AbstractTile.TILE_WIDTH/4f, AbstractTile.TILE_HEIGHT/2f)) , damage);
+		
+	}
+	
+	
 	public Texture getTexture() {
 		return texture;
 	}

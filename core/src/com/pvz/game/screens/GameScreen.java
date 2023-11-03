@@ -1,7 +1,9 @@
 package com.pvz.game.screens;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,22 +13,19 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.pvz.game.IsoGame;
 import com.pvz.game.TilemapOverlay;
 import com.pvz.game.tiles.AbstractTile;
 import com.pvz.game.tiles.PlantTile;
 import com.pvz.game.plants.*;
+import com.pvz.game.projectiles.Projectile;
+
 public class GameScreen implements Screen{
 
 
@@ -44,10 +43,9 @@ public class GameScreen implements Screen{
 	private IsometricTiledMapRenderer renderer;
 	private Viewport port;
 	
-	private List<Plant> plants = new ArrayList<Plant>();
+	private Map<String, Plant> plants = new HashMap<String, Plant>();
 	private PlantLoader plantLoader;
 	
-	private float elapsedTime; //For animations
 	
 	public GameScreen(SpriteBatch batch) {
 
@@ -96,12 +94,9 @@ public class GameScreen implements Screen{
 		renderer.setView(camera);
 		
 	}
-	@Override
-	public void render(float delta) {
 
-		elapsedTime += 2 * Gdx.graphics.getDeltaTime();
-		
-		//Get mouse pos and reset textures
+	public void tileHover() {
+	//Get mouse pos and reset textures
 		int mx = Gdx.input.getX();
 		int my = Gdx.input.getY();
 
@@ -128,6 +123,14 @@ public class GameScreen implements Screen{
 	    	mapObjects.plant(t, t);
 		}
 
+	}
+	
+	@Override
+	public void render(float delta) {
+
+		
+	
+	    tileHover();
 		update(delta);
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -136,9 +139,10 @@ public class GameScreen implements Screen{
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 	
-		mapObjects.render(batch, elapsedTime);
+		mapObjects.render(batch, Gdx.graphics.getDeltaTime());
 		batch.end();
 	}
+
 
 	@Override
 	public void resize(int width, int height) {

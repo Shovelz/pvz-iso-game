@@ -6,28 +6,32 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Projectile {
 
-	private float arc;
-	private int speed;
-	private Texture sprite;
-	private Vector2 target;
-	private Vector2 start;
-	private int damage;
+	protected float arc;
+	protected float speed;
+	protected Texture sprite;
+	protected Vector2 target;
+	protected Vector2 start;
+	protected Vector2 location;
+	protected int damage;
 
-	public Projectile(float arc, int speed, Texture sprite, Vector2 start, int damage, Vector2 target) {
+	public Projectile(float arc, float speed, Texture sprite, Vector2 start, int damage, Vector2 target) {
 		this.arc = arc;
 		this.speed = speed;
 		this.sprite = sprite;
 		this.target = target;
 		this.start = start;
 		this.damage = damage;
+		this.location = start;
 	}
 
-	public Projectile(float arc, int speed, Texture sprite, Vector2 start, int damage) {
+	public Projectile(float arc, float speed, Texture sprite, Vector2 start, int damage) {
 		this(arc, speed, sprite, start, damage, null);
 
 	}
+
 	public abstract void render(SpriteBatch batch, float delta);
 	public abstract void update(float delta);
+	public abstract void move(float delta);
 	
 	/**
 	 * @return the arc
@@ -46,14 +50,14 @@ public abstract class Projectile {
 	/**
 	 * @return the speed
 	 */
-	public int getSpeed() {
+	public float getSpeed() {
 		return speed;
 	}
 
 	/**
 	 * @param speed the speed to set
 	 */
-	public void setSpeed(int speed) {
+	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 

@@ -9,6 +9,9 @@ public abstract class AbstractTile {
 	protected Texture texture;
 	protected Vector2 tilemapPos;
 	protected Vector2 worldPos;
+
+	public static final float TILE_WIDTH = 48;
+	public static final float TILE_HEIGHT = 48;
 	
 	public AbstractTile(Texture t, Vector2 tileMapPos, Vector2 wPos) {
 		texture = t;
