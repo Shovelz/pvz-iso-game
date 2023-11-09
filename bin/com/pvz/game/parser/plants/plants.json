@@ -1,0 +1,7 @@
+[
+
+{"name": "Peashooter","cost": "100", "recharge": "7.5", "health": "6", "damage": "100", "interval": "1.5", "range": "full"}, 
+{"name": "Sunflower", "cost": "50", "recharge": "7.5", "health": "6", "damage": "0", "interval": "24", "range": "null"},
+{"name": "Walnut", "cost": "50", "recharge": "30", "health": "72", "damage": "0", "interval": "0", "range": "null"} 
+
+]

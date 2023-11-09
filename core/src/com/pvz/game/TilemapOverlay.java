@@ -100,10 +100,7 @@ public class TilemapOverlay {
 			}
 		}
 
-
 	}
-
-
 
 
 	public AbstractTile get(float mouseX, float mouseY) {

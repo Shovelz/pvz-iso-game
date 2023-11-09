@@ -13,6 +13,7 @@ import com.pvz.game.tiles.PlantTile;
 
 public class Plant{
 
+	private String name;
 	private Texture texture;
 	private Texture spriteSheet;
 	private int damage;
@@ -59,16 +60,10 @@ public class Plant{
 		this.game = game;
 	}
 
-	//Where loading animations in the Plant and not the Tiles so we only have to load it once 
+	//Were loading animations in the Plant and not the Tiles so we only have to load it once 
 	private void loadAnimations() {
 
 		TextureRegion[][] tmpFrames = TextureRegion.split(spriteSheet, 48, 48);
-//		for(int row = 0; row < tmpFrames.length;row++) {
-//			for(int col = 0; col < tmpFrames[tmpFrames.length-1].length; col++) {
-//				System.out.print("Row: " + row + ", Col: " + col + ", Texture: ");
-//				System.out.println(tmpFrames[row][col]);
-//			}
-//		}
 
 		animationFrames = new TextureRegion[tmpFrames.length * tmpFrames[0].length];
 		int index = 0;
@@ -89,6 +84,14 @@ public class Plant{
 	}
 	
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Texture getTexture() {
 		return texture;
 	}
